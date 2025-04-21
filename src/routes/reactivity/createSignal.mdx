@@ -1,0 +1,43 @@
+---
+title: createSignal
+---
+
+# createSignal
+
+`createSignal` is the fundamental reactive primitive in Solid. It creates a signal with a getter and setter.
+
+## Basic Usage
+
+```tsx
+import { createSignal } from 'solid-js';
+
+function Counter() {
+  const [count, setCount] = createSignal(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count()}</button>;
+}
+```
+
+## Derived Signals
+
+Signals can be derived from other signals. This is useful for creating derived state that can be updated locally, and also resets when dependencies update.
+
+```tsx
+import { createSignal } from 'solid-js';
+
+function Child(props: { count: number }) {
+  const [childCount, setChildCount] = createSignal(() => props.count);
+
+  return <button onClick={() => setChildCount(c => c + 1)}>{childCount()}</button>;
+}
+
+function Parent() {
+  const [count, setCount] = createSignal(0);
+
+  return <div>
+    <Child count={count()} />
+    <button onClick={() => setCount(0)}>Reset</button>
+  </div>;
+}
+```
+
+Here updating `count` will also update `childCount`, but updating `childCount` will not affect `count`.

@@ -19,24 +19,10 @@ export default defineConfig(
                   title: "Overview",
                   link: "/",
                 },
-                {
-                  title: "Quick Start",
-                  link: "/quick-start",
-                },
-              ],
-            },
-            {
-              title: "Migration",
-              collapsed: true,
-              items: [
-                {
-                  title: "Migration Guide",
-                  link: "/migration",
-                },
-                {
-                  title: "Breaking Changes",
-                  link: "/breaking-changes",
-                },
+                // {
+                //   title: "Quick Start",
+                //   link: "/quick-start",
+                // },
               ],
             },
             {
@@ -56,20 +42,8 @@ export default defineConfig(
                   link: "/reactivity/createAsync",
                 },
                 {
-                  title: "Async Utilities",
-                  link: "/reactivity/async-utilities",
-                },
-                {
-                  title: "createStore",
-                  link: "/reactivity/createStore",
-                },
-                {
-                  title: "createProjection",
-                  link: "/reactivity/createProjection",
-                },
-                {
-                  title: "Store Utilities",
-                  link: "/reactivity/store-utilities",
+                  title: "Utilities",
+                  link: "/reactivity/utilities",
                 },
                 {
                   title: "createEffect",
@@ -78,6 +52,24 @@ export default defineConfig(
                 {
                   title: "createRenderEffect",
                   link: "/reactivity/createRenderEffect",
+                },
+              ],
+            },
+            {
+              title: "Stores",
+              collapsed: true,
+              items: [
+                {
+                  title: "createStore",
+                  link: "/stores/createStore",
+                },
+                {
+                  title: "createProjection",
+                  link: "/stores/createProjection",
+                },
+                {
+                  title: "Store Utilities",
+                  link: "/stores/store-utilities",
                 },
               ],
             },
@@ -126,6 +118,20 @@ export default defineConfig(
                 {
                   title: "Automatic Batching",
                   link: "/philosophy/automatic-batching",
+                },
+              ],
+            },
+            {
+              title: "Migration",
+              collapsed: true,
+              items: [
+                {
+                  title: "Migration Guide",
+                  link: "/migration",
+                },
+                {
+                  title: "Breaking Changes",
+                  link: "/breaking-changes",
                 },
               ],
             },

@@ -4,34 +4,77 @@ title: createAsync
 
 # createAsync
 
-`createAsync` provides a way to handle asynchronous operations with reactivity.
+`createAsync` provides a way to fetch data asynchronously and reactively.
 
-## Usage
+## Basic Usage
 
 ```tsx
-import { createAsync } from 'solid-js/v2';
+import { createAsync } from 'solid-js';
 
-function UserProfile({ userId }) {
-  const user = createAsync(() => fetchUser(userId));
+function UserProfile(props: { userId: string }) {
+  const user = createAsync(() => fetchUser(props.userId));
   
-  return (
-    <div>
-      {user.loading && <div>Loading...</div>}
-      {user.error && <div>Error: {user.error}</div>}
-      {user() && <div>Name: {user().name}</div>}
-    </div>
-  );
+  return <div>Name: {user().name}</div>;
 }
 ```
 
-## API
+`createAsync` will automatically rerun when `props.userId` changes.
 
-```ts
-function createAsync<T>(fn: () => Promise<T>): () => T | undefined
+## Loading States
+
+Async signals in Solid v2 don't return `undefined` when loading. They always return the resolved value.
+
+To handle initial loading states, wrap the signal read with [`<Suspense />`](/rendering/suspense).
+
+```tsx
+import { Suspense } from 'solid-js';
+
+
+function UserProfile(props: { userId: string }) {
+  const user = createAsync(() => fetchUser(props.userId));
+
+  return <Suspense fallback={<div>Loading user...</div>}>
+    <div>Name: {user().name}</div>
+  </Suspense>;
+}
 ```
 
-## Features
+The Suspense fallback is only shown when `UserProfile` is rendered and `fetchUser` is pending. It does not trigger when `props.userId` changes and `fetchUser` reruns.
 
-- Automatic loading states
-- Error handling
-- Suspense integration 
+To handle updates to existing async signals, use [`isPending`](/reactivity/utilities#ispending).
+
+```tsx
+import { Suspense, isPending } from 'solid-js';
+
+
+function UserProfile(props: { userId: string }) {
+  const user = createAsync(() => fetchUser(props.userId));
+
+  return <Suspense fallback={<div>Loading user...</div>}>
+    <div class={isPending(user) ? 'loading' : ''}>
+      Name: {user().name}
+    </div>
+  </Suspense>;
+}
+```
+
+`isPending` only returns `true` when an existing async signal reruns. It does not trigger when a new async signal is created.
+
+## Error Handling
+
+To handle error states, wrap the signal read with [`<ErrorBoundary />`](/rendering/error-boundary).
+
+```tsx
+import { ErrorBoundary } from 'solid-js';
+
+
+function UserProfile(props: { userId: string }) {
+  const user = createAsync(() => fetchUser(props.userId));
+
+  return <ErrorBoundary fallback={<div>Error loading user</div>}>
+    <Suspense fallback={<div>Loading user...</div>}>
+      <div>Name: {user().name}</div>
+    </Suspense>
+  </ErrorBoundary>;
+}
+```

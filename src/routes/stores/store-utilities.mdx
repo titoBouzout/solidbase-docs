@@ -1,0 +1,143 @@
+---
+title: Store Utilities
+---
+
+# Store Utilities
+
+A collection of utilities for working with stores in SolidJS v2.
+
+## Overview
+
+Available utilities:
+- `unwrap` - For accessing the underlying object without the proxy wrapper
+- `reconcile` - For resetting the store to a new object
+- `deep` - For tracking deep changes to the store
+- `path` - For updating a store property by a path string
+
+## unwrap
+
+`unwrap` is a utility function that returns the underlying object without the proxy wrapper. It only tracks changes to the object being unwrapped. It does not track changes to properties inside the object.
+
+```tsx
+import { createEffect } from 'solid-js';
+import { createStore, unwrap } from 'solid-js/store';
+
+function TodoApp() {
+  const [state, setState] = createStore({
+    todos: [{ id: 1, text: 'Buy groceries', completed: false }]
+  });
+  
+  createEffect(() => unwrap(state.todos), (todos) => {
+    console.log(todos);
+  });
+
+  function addTodo() {
+    // This will not trigger the createEffect
+    setState(state => {
+      state.todos.push({ text: 'New Todo', completed: false });
+    });
+  }
+  
+  function resetTodos() {
+    // This will trigger the createEffect
+    setState(state => {
+      state.todos = [];
+    });
+  }
+}
+```
+
+## reconcile
+
+`reconcile` is a utility function that resets the store to a new object and diffs the properties being accessed.
+
+```tsx
+import { For } from 'solid-js';
+import { createStore, reconcile } from 'solid-js/store';
+
+function TodoApp() {
+  const [state, setState] = createStore({
+    todos: [{ id: 1, text: 'Buy groceries', completed: false }]
+  });
+  
+  function resetTodos() {
+    const newTodos = getRandomTodos();
+    // This will recreate the entire list in the DOM
+    setState(state => {
+      state.todos = newTodos;
+    });
+  }
+
+  function reconcileTodos() {
+    const newTodos = getRandomTodos();
+    // This will only create the necessary DOM nodes and update the existing ones
+    setState(state => {
+      state.todos = reconcile(newTodos, `id`)(state.todos);
+    });
+  }
+
+  return <div>
+    <For each={state.todos}>
+      {(todo) => <div>{todo.text}</div>}
+    </For>
+  </div>;
+}
+```
+
+`reconcile` requires defining a key for objects inside an array. The key is used to determine if an object is the same as the previous object. Objects with the same key are merged, and objects with different keys are replaced.
+
+## deep
+
+`deep` is a utility function that tracks deep changes to the store, unlike `unwrap` which only tracks changes to the object being unwrapped.
+
+```tsx
+import { createEffect } from 'solid-js';
+import { createStore, deep } from 'solid-js/store';
+
+function TodoApp() {
+  const [state, setState] = createStore({
+    todos: [{ id: 1, text: 'Buy groceries', completed: false }]
+  });
+
+  createEffect(() => deep(state.todos), (todos) => {
+    console.log(todos);
+  });
+
+  function addTodo() {
+    // This will trigger the createEffect
+    setState(state => {
+      state.todos.push({ text: 'New Todo', completed: false });
+    });
+  }
+}
+```
+
+## path
+
+`path` is a utility function that updates a store property by a path string.
+
+```tsx
+import { createStore, path } from 'solid-js/store';
+
+function TodoApp() {
+  const [state, setState] = createStore({
+    todos: [{ id: 1, text: 'Buy groceries', completed: false }]
+  });
+
+  function updateTodo(id: string, text: string) {
+    setState(state => {
+      state.todos[id].text = text;
+    });
+  }
+
+  function updateTodoPath(id: string, text: string) {
+    setState(state => {
+      path(`todos`, id, `text`, text)(state);
+    });
+  }
+}
+```
+
+## Working with Projections
+
+All of these utilities work the same way with projections.

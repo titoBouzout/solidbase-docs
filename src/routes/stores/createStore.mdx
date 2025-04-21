@@ -1,0 +1,39 @@
+---
+title: createStore
+---
+
+# createStore
+
+`createStore` provides a way to manage complex state using mutable objects and listening to only the properties that are read.
+
+## Usage
+
+```tsx
+import { For } from 'solid-js';
+import { createStore } from 'solid-js/store';
+
+function TodoApp() {
+  const [state, setState] = createStore({ todos: [] });
+  
+  return (
+    <div>
+      <For each={state.todos}>
+        {(todo) => (
+          <div>{todo.text}</div>
+        )}
+      </For>
+      <button
+        onClick={() => setState(state => {
+          state.todos.push({
+            text: 'New Todo',
+            completed: false
+          });
+        })}
+      >
+        Add Todo
+      </button>
+    </div>
+  );
+}
+```
+

@@ -4,48 +4,4 @@ title: Quick Start
 
 # Quick Start
 
-This guide will help you get started with SolidJS v2 quickly. We'll cover the basic setup and core concepts.
-
-## Installation
-
-```bash
-# Create a new project
-npx degit solidjs/templates/ts my-solid-app
-cd my-solid-app
-
-# Install dependencies
-npm install
-```
-
-## Basic Example
-
-Here's a simple counter component using SolidJS v2's new features:
-
-```tsx
-import { createSignal } from 'solid-js/v2';
-
-function Counter() {
-  const [count, setCount] = createSignal(0);
-  
-  return (
-    <div>
-      <p>Count: {count()}</p>
-      <button onClick={() => setCount(c => c + 1)}>Increment</button>
-    </div>
-  );
-}
-```
-
-## Key Differences from v1
-
-1. **Imports**: Use `solid-js/v2` instead of `solid-js`
-2. **Reactivity**: Enhanced fine-grained reactivity system
-3. **Async**: New async primitives and utilities
-4. **Stores**: Improved store system with projections
-
-## Next Steps
-
-- Learn about [Signals](/signals)
-- Explore [Rendering](/rendering)
-- Understand the [Philosophy](/philosophy) behind v2
-
+TODO: Write about the quick start.

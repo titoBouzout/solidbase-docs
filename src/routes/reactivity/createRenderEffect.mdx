@@ -9,27 +9,27 @@ title: createRenderEffect
 ## Usage
 
 ```tsx
-import { createSignal, createRenderEffect } from 'solid-js/v2';
+import { createSignal, createRenderEffect } from 'solid-js';
 
 function Counter() {
   const [count, setCount] = createSignal(0);
   
-  createRenderEffect(() => {
-    document.title = `Count: ${count()}`;
+  createRenderEffect(count, (c) => {
+    document.title = `Count: ${c}`;
   });
   
   return <button onClick={() => setCount(c => c + 1)}>{count()}</button>;
 }
 ```
 
-## API
+Similar to [`createEffect`](/reactivity/createEffect), `createRenderEffect` accepts two arguments:
 
-```ts
-function createRenderEffect(fn: () => void): void
-```
+1. A reactive function to track dependencies of the side effect and return a value.
+2. A side effect function that will be called with the value returned from the reactive function.
 
-## Features
+There are some key differences between `createRenderEffect` and `createEffect`:
 
-- Runs during rendering
-- Automatic cleanup
-- Synchronous execution 
+1. Every `createRenderEffect` will run before any `createEffect` runs.
+2. If a `createRenderEffect` depends on an newly created async signal that is not resolved yet, it will trigger its parent [`<Suspense>`](/rendering/suspense) boundary.
+3. If a `createRenderEffect` depends on an existing async signal that is not resolved yet, it will return with the previous value, similar to [`latest`](/reactivity/utilities#latest).
+

@@ -1,0 +1,40 @@
+---
+title: createProjection
+---
+
+# createProjection
+
+`createProjection` allows creating a [store](/stores/createStore) that updates reactively instead of programmatically.
+
+## Usage
+
+```tsx
+import { createSignal, For } from 'solid-js';
+import { createProjection } from 'solid-js/store';
+
+function TodoApp(props: { todos: Todo[] }) {
+  const [selectedTodo, setSelectedTodo] = createSignal(null);
+  
+  const todoSelection = createProjection(state => {
+    state[state._active] = false;
+    if (selectedTodo()) {
+      state[selectedTodo()] = true;
+      state._active = selectedTodo();
+    }
+  });
+  
+  return (
+    <div>
+      <For each={props.todos}>
+        {(todo) => (
+          <div
+            class={todoSelection[todo.id] ? 'active' : ''}
+            onClick={() => setSelectedTodo(todo.id)}
+          >{todo.text}</div>
+        )}
+      </For>
+      <button onClick={() => setSelectedTodo(null)}>Clear</button>
+    </div>
+  );
+}
+```
