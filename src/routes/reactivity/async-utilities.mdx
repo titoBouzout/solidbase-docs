@@ -1,0 +1,32 @@
+---
+title: Async Utilities
+---
+
+# Async Utilities
+
+A collection of utilities for working with asynchronous operations in SolidJS v2.
+
+## Overview
+
+Available utilities:
+- `createResource` - For data fetching
+- `createDeferred` - For deferred updates
+- `createTransition` - For concurrent transitions
+
+## Usage
+
+```tsx
+import { createResource } from 'solid-js/v2';
+
+function DataFetcher() {
+  const [data] = createResource(() => fetchData());
+  return <div>{data()}</div>;
+}
+```
+
+## Features
+
+- Resource management
+- Loading states
+- Error boundaries
+- Concurrent rendering 

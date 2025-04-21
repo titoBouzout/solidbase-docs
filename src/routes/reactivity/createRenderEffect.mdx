@@ -1,0 +1,35 @@
+---
+title: createRenderEffect
+---
+
+# createRenderEffect
+
+`createRenderEffect` provides a way to handle effects that need to run during rendering.
+
+## Usage
+
+```tsx
+import { createSignal, createRenderEffect } from 'solid-js/v2';
+
+function Counter() {
+  const [count, setCount] = createSignal(0);
+  
+  createRenderEffect(() => {
+    document.title = `Count: ${count()}`;
+  });
+  
+  return <button onClick={() => setCount(c => c + 1)}>{count()}</button>;
+}
+```
+
+## API
+
+```ts
+function createRenderEffect(fn: () => void): void
+```
+
+## Features
+
+- Runs during rendering
+- Automatic cleanup
+- Synchronous execution 

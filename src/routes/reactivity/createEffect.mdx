@@ -1,0 +1,35 @@
+---
+title: createEffect
+---
+
+# createEffect
+
+`createEffect` provides a way to handle side effects in SolidJS v2.
+
+## Usage
+
+```tsx
+import { createSignal, createEffect } from 'solid-js/v2';
+
+function Counter() {
+  const [count, setCount] = createSignal(0);
+  
+  createEffect(() => {
+    console.log('Count changed:', count());
+  });
+  
+  return <button onClick={() => setCount(c => c + 1)}>{count()}</button>;
+}
+```
+
+## API
+
+```ts
+function createEffect(fn: () => void): void
+```
+
+## Features
+
+- Automatic cleanup
+- Dependency tracking
+- Scheduling control 

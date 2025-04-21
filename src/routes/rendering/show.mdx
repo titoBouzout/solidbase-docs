@@ -1,0 +1,36 @@
+---
+title: Show
+---
+
+# Show
+
+The `<Show>` component provides conditional rendering in SolidJS v2.
+
+## Usage
+
+```tsx
+import { Show } from 'solid-js/v2';
+
+function UserProfile({ user }) {
+  return (
+    <Show
+      when={user}
+      fallback={<div>Loading...</div>}
+    >
+      {(user) => <div>Welcome, {user.name}</div>}
+    </Show>
+  );
+}
+```
+
+## Props
+
+- `when` - The condition to check
+- `fallback` - Content to show when condition is false
+- `children` - Render prop for the content
+
+## Features
+
+- Type-safe conditional rendering
+- Automatic cleanup
+- Efficient updates 

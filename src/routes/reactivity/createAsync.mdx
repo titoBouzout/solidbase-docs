@@ -1,0 +1,37 @@
+---
+title: createAsync
+---
+
+# createAsync
+
+`createAsync` provides a way to handle asynchronous operations with reactivity.
+
+## Usage
+
+```tsx
+import { createAsync } from 'solid-js/v2';
+
+function UserProfile({ userId }) {
+  const user = createAsync(() => fetchUser(userId));
+  
+  return (
+    <div>
+      {user.loading && <div>Loading...</div>}
+      {user.error && <div>Error: {user.error}</div>}
+      {user() && <div>Name: {user().name}</div>}
+    </div>
+  );
+}
+```
+
+## API
+
+```ts
+function createAsync<T>(fn: () => Promise<T>): () => T | undefined
+```
+
+## Features
+
+- Automatic loading states
+- Error handling
+- Suspense integration 

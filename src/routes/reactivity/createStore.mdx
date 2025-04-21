@@ -1,0 +1,40 @@
+---
+title: createStore
+---
+
+# createStore
+
+`createStore` provides a way to manage complex state with improved performance in v2.
+
+## Usage
+
+```tsx
+import { createStore } from 'solid-js/v2';
+
+function TodoApp() {
+  const [state, setState] = createStore({
+    todos: [],
+    filter: 'all'
+  });
+  
+  return (
+    <div>
+      {state.todos.map(todo => (
+        <div>{todo.text}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+## API
+
+```ts
+function createStore<T>(initialValue: T): [T, (fn: (state: T) => void) => void]
+```
+
+## Features
+
+- Immutable updates
+- Fine-grained reactivity
+- Type-safe state management 

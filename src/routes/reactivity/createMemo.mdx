@@ -1,0 +1,31 @@
+---
+title: createMemo
+---
+
+# createMemo
+
+`createMemo` creates a derived signal that automatically updates when its dependencies change.
+
+## Usage
+
+```tsx
+import { createSignal, createMemo } from 'solid-js/v2';
+
+function Counter() {
+  const [count, setCount] = createSignal(0);
+  const doubled = createMemo(() => count() * 2);
+  return <div>Count: {count()}, Doubled: {doubled()}</div>;
+}
+```
+
+## API
+
+```ts
+function createMemo<T>(fn: () => T): () => T
+```
+
+## Features
+
+- Automatic dependency tracking
+- Lazy evaluation
+- Type-safe derived values 

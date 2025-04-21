@@ -1,0 +1,33 @@
+---
+title: For
+---
+
+# For
+
+The `<For>` component provides efficient list rendering in SolidJS v2.
+
+## Usage
+
+```tsx
+import { For } from 'solid-js/v2';
+
+function TodoList({ todos }) {
+  return (
+    <For each={todos}>
+      {(todo) => <div>{todo.text}</div>}
+    </For>
+  );
+}
+```
+
+## Props
+
+- `each` - The array to iterate over
+- `children` - Render prop for each item
+- `fallback` - Content to show when array is empty
+
+## Features
+
+- Key-based updates
+- Efficient list rendering
+- Type-safe iteration 

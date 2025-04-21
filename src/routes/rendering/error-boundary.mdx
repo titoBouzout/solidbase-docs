@@ -1,0 +1,32 @@
+---
+title: ErrorBoundary
+---
+
+# ErrorBoundary
+
+The `<ErrorBoundary>` component provides error handling in SolidJS v2.
+
+## Usage
+
+```tsx
+import { ErrorBoundary } from 'solid-js/v2';
+
+function SafeComponent() {
+  return (
+    <ErrorBoundary fallback={(err) => <div>Error: {err.message}</div>}>
+      <RiskyComponent />
+    </ErrorBoundary>
+  );
+}
+```
+
+## Props
+
+- `fallback` - Error handler function
+- `children` - Content to wrap with error boundary
+
+## Features
+
+- Error catching
+- Graceful degradation
+- Type-safe error handling 
