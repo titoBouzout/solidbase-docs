@@ -4,7 +4,9 @@ import { withSolidBase } from "@kobalte/solidbase/config";
 export default defineConfig(
   withSolidBase(
     {
-      /* your SolidStart config */
+      server: {
+        preset: "netlify",
+      },
     },
     {
       title: "Solid.js v2",
