@@ -1,4 +1,6 @@
-# SolidStart
+# WIP Solid 2.0 docs
+
+https://solid-next-docs.netlify.app/
 
 Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
 

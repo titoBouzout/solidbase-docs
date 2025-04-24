@@ -10,6 +10,8 @@ export default defineConfig(
     },
     {
       title: "Solid.js v2",
+			description: "Rough WIP docs for Solid 2.0.",
+      editPath: "https://github.com/devagrawal09/solid-next-docs/tree/master/:path",
       themeConfig: {
         sidebar: {
           items: [
