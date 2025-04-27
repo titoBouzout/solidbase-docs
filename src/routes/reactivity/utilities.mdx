@@ -9,6 +9,7 @@ A collection of utilities for working with asynchronous operations in SolidJS v2
 ## Overview
 
 Available utilities:
+
 - [`isPending`](#isPending) - For checking if an async signal is pending
 - [`catchError`](#catchError) - For handling errors in signal computations
 - [`latest`](#latest) - For getting the latest resolved value of a signal, even if it's pending
@@ -16,32 +17,28 @@ Available utilities:
 
 ## isPending
 
-`isPending` returns `true` if an async signal is pending. 
+`isPending` returns `true` if an async signal is pending.
 
 ```tsx
-import { isPending, createAsync } from 'solid-js';
+import { isPending, createAsync } from "solid-js";
 
 function UserProfile(props: { userId: string }) {
   const user = createAsync(() => fetchUser(props.userId));
 
-  return <div class={isPending(user) ? 'loading' : ''}>
-    Name: {user().name}
-  </div>;
+  return <div class={isPending(user) ? "loading" : ""}>Name: {user().name}</div>;
 }
 ```
 
 `isPending` also works with signals derived from async signals.
 
 ```tsx
-import { isPending, createAsync, createMemo } from 'solid-js';
+import { isPending, createAsync, createMemo } from "solid-js";
 
 function UserProfile(props: { userId: string }) {
   const user = createAsync(() => fetchUser(props.userId));
   const name = createMemo(() => user().name);
 
-  return <div class={isPending(name) ? 'loading' : ''}>
-    Name: {name()}
-  </div>;
+  return <div class={isPending(name) ? "loading" : ""}>Name: {name()}</div>;
 }
 ```
 
@@ -50,118 +47,117 @@ function UserProfile(props: { userId: string }) {
 `catchError` is a utility function that returns an Error thrown inside a signal, or undefined if the signal resolves without throwing.
 
 ```tsx
-import { catchError, createAsync } from 'solid-js';
+import { catchError, createAsync } from "solid-js";
 
 function UserProfile(props: { userId: string }) {
   const user = createAsync(() => fetchUser(props.userId));
   const error = () => catchError(user);
 
-  return <div>
-    {error()?.message || 'No error'}
-  </div>;
+  return <div>{error()?.message || "No error"}</div>;
 }
 ```
 
 `catchError` also works with signals derived from other signals that throw errors.
 
 ```tsx
-import { catchError, createMemo, createAsync } from 'solid-js';
+import { catchError, createMemo, createAsync } from "solid-js";
 
 function UserProfile(props: { userId: string }) {
   const user = createAsync(() => fetchUser(props.userId));
   const name = createMemo(() => user().name);
   const error = () => catchError(name);
 
-  return <div>
-    {error()?.message || 'No error'}
-  </div>;
+  return <div>{error()?.message || "No error"}</div>;
 }
 ```
 
 `catchError` handles errors thrown both synchronously and asynchronously.
 
 ```tsx
-import { catchError, createMemo, createAsync } from 'solid-js';
+import { catchError, createMemo, createAsync } from "solid-js";
 
 function UserProfile(props: { userId: string }) {
   const user = createAsync(() => fetchUser(props.userId));
   const adminName = createMemo(() => {
-    if(!user().isAdmin) {
-      throw new Error('User is not an admin');
+    if (!user().isAdmin) {
+      throw new Error("User is not an admin");
     }
     return user().name;
   });
   const error = () => catchError(adminName);
 
-  return <div>
-    {error()?.message || 'No error'}
-  </div>;
+  return <div>{error()?.message || "No error"}</div>;
 }
 ```
-
 
 ## latest
 
-`latest` is a utility function that returns the latest resolved value of a signal, even if it's pending.
+`latest` is a utility function that returns the latest resolved value of a signal (also works with signals derived from async signals), even if it's pending.
+
+### Definition
 
 ```tsx
-import { latest, createAsync } from 'solid-js';
+declare function latest<T>(fn: () => T): T;
+declare function latest<T, U>(fn: () => T, fallback: U): T | U;
+```
 
-function UserProfile(props: { userId: string }) {
-  const user = createAsync(() => fetchUser(props.userId));
-  const info = () => `${props.userId}: ${latest(user().name)}`;
+### Example
 
-  return <div>
-    {info()}
-  </div>;
+Latest can be useful when you need to show stale data (latest data) while new data is being fetched.
+In the following example new user is being fetched with updated user id, old (_latest_) name will be shown.
+
+```tsx
+import { createSignal, createAsync, latest } from "solid-js";
+
+const USERS = [
+  { id: 1, name: "Eric" },
+  { id: 2, name: "John" },
+  { id: 3, name: "Rick" },
+];
+
+// Simulate network request
+const fetchUser = (id: number) =>
+  new Promise((resolve) =>
+    setTimeout(() => {
+      resolve(USERS.find((item) => item.id === id));
+    }, 1000)
+  );
+
+function LatestExample() {
+  const [userIdToFetch, setUserIdToFetch] = createSignal(1);
+
+  const user = createAsync(async () => fetchUser(userIdToFetch()));
+  // `info` will show updated `userIdToFetch` and old (latest) user's name
+  const info = () => `id = ${userIdToFetch()}, name = ${latest(() => user()?.name)}`;
+
+  return (
+    <section>
+      <p>User id to fetch: {userIdToFetch()}</p>
+      <p>User: {info()}</p>
+      <button onClick={() => setUserIdToFetch((id) => ++id)}>Fetch next user</button>
+    </section>
+  );
 }
 ```
 
-Here when `props.userId` changes, `info` will show the updated userId with the old user's name while the new user is being fetched. Once the new user is fetched, `info` will show the new user's name.
-
-Here is the same example without `latest`.
+If you don't use `latest`:
 
 ```tsx
-import { createAsync } from 'solid-js';
-
-function UserProfile(props: { userId: string }) {
-  const user = createAsync(() => fetchUser(props.userId));
-  const info = () => `${props.userId}: ${user().name}`;
-
-  return <div>
-    {info()}
-  </div>;
-}
+const info = () => `id = ${userIdToFetch()}, name = ${user()?.name}`;
 ```
 
-This will never show the new userId with the old user's name. When `props.userId` changes, `info` continues to show the old userId with the old user's name. Once the new user is fetched, `info` will show the new user's id and name.
-
-`latest` also works with signals derived from async signals.
-
-```tsx
-import { latest, createMemo, createAsync } from 'solid-js';
-
-function UserProfile(props: { userId: string }) {
-  const user = createAsync(() => fetchUser(props.userId));
-  const name = createMemo(() => user().name);
-  const info = () => `${props.userId}: ${latest(name)}`;
-
-  return <div>
-    {info()}
-  </div>;
-}
-```
+You'll never see old user name and updated user id: name and id will match.
 
 ## resolveAsync
 
 `resolveAsync` is a utility function that returns a promise that resolves with the value of the signal.
 
 ```tsx
-import { resolveAsync, createAsync } from 'solid-js';
+import { resolveAsync, createAsync } from "solid-js";
 
 function UserProfile(props: { userId: string }) {
   const user = createAsync(() => fetchUser(props.userId));
-  
+
   async function handleClick() {
     const user = await resolveAsync(user);
     console.log(user.name);
@@ -174,12 +170,12 @@ function UserProfile(props: { userId: string }) {
 `resolveAsync` also works with signals derived from async signals.
 
 ```tsx
-import { resolveAsync, createAsync } from 'solid-js';
+import { resolveAsync, createAsync } from "solid-js";
 
 function UserProfile(props: { userId: string }) {
   const user = createAsync(() => fetchUser(props.userId));
   const name = createMemo(() => user().name);
-  
+
   async function handleClick() {
     const name = await resolveAsync(name);
     console.log(name);
@@ -188,4 +184,3 @@ function UserProfile(props: { userId: string }) {
   return <button onClick={handleClick}>Log User</button>;
 }
 ```
-
