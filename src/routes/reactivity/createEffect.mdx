@@ -9,16 +9,16 @@ title: createEffect
 ## Usage
 
 ```tsx
-import { createSignal, createEffect } from 'solid-js';
+import { createSignal, createEffect } from "solid-js";
 
 function Counter() {
   const [count, setCount] = createSignal(0);
-  
+
   createEffect(count, (c) => {
-    console.log('Count changed:', c);
+    console.log("Count changed:", c);
   });
-  
-  return <button onClick={() => setCount(c => c + 1)}>{count()}</button>;
+
+  return <button onClick={() => setCount((c) => c + 1)}>{count()}</button>;
 }
 ```
 
@@ -30,20 +30,52 @@ function Counter() {
 This split protects the side effect from unresolved async signals and ensures that the side effect is only called when all async dependencies are resolved.
 
 ```tsx
-import { createAsync, createEffect } from 'solid-js';
+import { createAsync, createEffect } from "solid-js";
 
 function UserProfile(props: { userId: string }) {
   const user = createAsync(() => fetchUser(props.userId));
 
   createEffect(user, (user) => {
-    console.log('User:', user);
+    console.log("User:", user);
   });
 
-  return <div>
-    {user().name}
-  </div>;
+  return <div>{user().name}</div>;
 }
 ```
 
+## SSR and `createEffect`
 
+`createEffect` never runs on the server:
 
+```tsx
+import { createSignal, createEffect } from "solid-js";
+
+function IsomorphicComponentExample() {
+  const [value] = createSignal(0);
+
+  createEffect(value, (value) => {
+    // This code never runs on server
+    alert(`Signal value: ${value}`);
+  });
+
+  return <p>Signal value: {value()}</p>;
+}
+```
+
+## Making `onMount` (runs on the client)
+
+Solid `^2.0` doesn't provide `onMount` function from Solid `^1.0`, but you can easily simulate it:
+
+```tsx
+import { createEffect } from "solid-js";
+
+const onMount = (fn: VoidFunction) => createEffect(() => void 0, fn);
+
+function OnMountExample() {
+  onMount(() => {
+    console.log("Log from `onMount`");
+  });
+
+  return <p>Test component</p>;
+}
+```
