@@ -6,14 +6,36 @@ title: createSignal
 
 `createSignal` is the fundamental reactive primitive in Solid. It creates a signal with a getter and setter.
 
+## Definition
+
+```tsx
+type Signal<T> = [get: Accessor<T>, set: Setter<T>];
+
+function createSignal<T>(): Signal<T | undefined>;
+// `createSignal` can also accept initial value as a parameter
+function createSignal<T>(value: Exclude<T, Function>, options?: SignalOptions<T>): Signal<T>;
+// or it can accept another signal (see `Derived Signals` example)
+function createSignal<T>(
+  fn: ComputeFunction<T>,
+  initialValue?: T,
+  options?: SignalOptions<T>
+): Signal<T>;
+
+interface SignalOptions<T> {
+  name?: string;
+  equals?: ((prev: T, next: T) => boolean) | false;
+}
+```
+
 ## Basic Usage
 
 ```tsx
-import { createSignal } from 'solid-js';
+import { createSignal } from "solid-js";
 
 function Counter() {
   const [count, setCount] = createSignal(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count()}</button>;
+
+  return <button onClick={() => setCount((c) => c + 1)}>{count()}</button>;
 }
 ```
 
@@ -22,22 +44,113 @@ function Counter() {
 Signals can be derived from other signals. This is useful for creating derived state that can be updated locally, and also resets when dependencies update.
 
 ```tsx
-import { createSignal } from 'solid-js';
+import { createSignal } from "solid-js";
 
 function Child(props: { count: number }) {
   const [childCount, setChildCount] = createSignal(() => props.count);
 
-  return <button onClick={() => setChildCount(c => c + 1)}>{childCount()}</button>;
+  return <button onClick={() => setChildCount((c) => c + 1)}>{childCount()}</button>;
 }
 
 function Parent() {
   const [count, setCount] = createSignal(0);
 
-  return <div>
-    <Child count={count()} />
-    <button onClick={() => setCount(0)}>Reset</button>
-  </div>;
+  return (
+    <div>
+      <Child count={count()} />
+      <button onClick={() => setCount(0)}>Reset</button>
+    </div>
+  );
 }
 ```
 
 Here updating `count` will also update `childCount`, but updating `childCount` will not affect `count`.
+
+## `equals` parameter
+
+You can pass `equals` parameter to customize signal update behavior. By default values compared with `===`, however you can set your own behavior:
+
+```tsx
+function CustomEqualsExample() {
+  const [value, setValue] = createSignal(0, {
+    // Do not update signal when we value is more than 5
+    equals: (_prev, next) => next > 5,
+  });
+
+  return (
+    <section>
+      <p>Value will not be more than (5): {value()}</p>
+      <button onClick={() => setValue((value) => value + 1)}>Increase value</button>
+    </section>
+  );
+}
+```
+
+### Special case `equals: false`
+
+There are special cases when you might need to pass `equals: false`.
+
+For instance, you might want to implement **refetch** functioanlity:
+
+```tsx
+import { createSignal, createAsync, isPending, Suspense } from "solid-js";
+
+const fetchRandomNumber = () =>
+  new Promise<number>((resolve) => {
+    setTimeout(() => resolve(Math.random()), 1000);
+  });
+
+function RefetchExample() {
+  const [refetchSignal, refetch] = createSignal(undefined, { equals: false });
+  const randomNumber = createAsync(() => {
+    // subscribe to refetch signal
+    refetchSignal();
+
+    return fetchRandomNumber();
+  });
+
+  return (
+    <section>
+      <p>
+        Random number:{" "}
+        <Suspense fallback="Loading number...">
+          <Show when={!isPending(randomNumber)} fallback="Refetching number...">
+            {randomNumber()}
+          </Show>
+        </Suspense>
+      </p>
+      <button onClick={refetch} disabled={isPending(randomNumber)}>Refetch number</button>
+    </section>
+  );
+}
+```
+
+Another usecase is when you want to reduce memory allocation. In Solid (in comparison to React) signals can be _mutable_. In the following example we don't need to create a new object every time to update the signal. Instead, we can just mutate the object. If you build high-load app, this trick can help you to optimize memory and GC calls.
+
+```tsx
+function SignalMutationExample() {
+  // Calling `updateObject` will always trigger the signal
+  const [object, updateObject] = createSignal({ value: 0 }, { equals: false });
+
+  return (
+    <section>
+      <p>Object value: {object().value}</p>
+      <button
+        onClick={() =>
+          updateObject((object) => {
+            // Here we're not creating new object
+            // Instead we just mutate the value inside
+            object.value++;
+
+            return object;
+          })
+        }
+      >
+        Increase object value
+      </button>
+    </section>
+  );
+}
+```
+
+You should be careful with `equals: false`, because it may lead to unnecessary signal triggers which can lead to unnecessary computations.
