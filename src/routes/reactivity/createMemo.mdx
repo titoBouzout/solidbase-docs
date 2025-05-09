@@ -43,3 +43,41 @@ function UnusedLazyMemoExample() {
   return <div>Memo is not executed</div>;
 }
 ```
+
+## Derived signals vs `createMemo`
+
+Sometimes it's useful to use `createMemo` instead of **derived signals**: if you use derived signal, you subscribe to **all signals** which are used inside that derived signal. With `createMemo` you subscribe to **memo result** only.
+
+```tsx
+import { createSignal, createMemo, createEffect } from "solid-js";
+
+function DerivedSignalVsMemoExample() {
+  const [number1, setNumber1] = createSignal(0);
+  const [number2, setNumber2] = createSignal(0);
+
+  const derivedSum = () => number1() + number2();
+  // By default memo compares old and new values with `===`
+  const memoSum = createMemo(() => number1() + number2());
+
+  // this `createEffect` is subscribed to one signal (from `createMemo`)
+  createEffect(memoSum, (memoSum) => console.log(`Memo sum is logged only once: ${memoSum}`));
+
+  // Even the sum of two numbers is always 0
+  // This createEffect is subscribed to both signals instead of the result sum value
+  createEffect(derivedSum, (derivedSum) =>
+    console.log(`Derived sum is logged every time when you update numbers: ${derivedSum}`)
+  );
+
+  return (
+    <button
+      onClick={() => {
+        // Make the sum always the same
+        setNumber1((number1) => number1 + 1);
+        setNumber2((number2) => number2 - 1);
+      }}
+    >
+      Increase number1 and decrease number2
+    </button>
+  );
+}
+```
