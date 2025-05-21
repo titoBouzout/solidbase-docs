@@ -5,3 +5,109 @@ title: Breaking Changes
 # Breaking Changes
 
 TODO: Write about breaking changes.
+
+## Markup
+
+HTML has always been a first class citizen in Solid. "A `div` is a `div`".
+
+```jsx
+const div = <div />; // HTMLDivElement
+```
+
+However, there were a few markup gotchas that this release addresses.
+
+Solid 2.0 aligns better with HTML, making it easier to understand and explain. The main idea is that MDN should suffice, and no Solid-specific rules are introduced.
+
+## Attributes Case
+
+`camelCase` attributes has been dropped in favor of `lowercase` attributes.
+
+Solid 1.x
+
+```jsx
+<img crossOrigin="anonymous" />
+```
+
+Solid 2.x
+
+```jsx
+<img crossorigin="anonymous" />
+```
+
+Note: Attributes in `XML` space, such `SVG` are still case-sensitive per specification.
+
+## Properties
+
+Elements use attributes and not properties.
+However, the following few commonly used properties are still provided to ease development: `innerHTML`, `textContent` and `innerText`.
+
+```jsx
+<div textContent="<b>bold</b>" />
+```
+
+As usual, to set a property, or a custom property in an element see [`prop:`](https://docs.solidjs.com/reference/jsx-attributes/prop).
+
+```jsx
+<my-el prop:someProp={true}></my-el>
+```
+
+## Boolean Attributes
+
+A [Boolean Attribute](https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML) is an attribute that is present or not present.
+Commonly authored as `<input readonly/>` or `<input readonly=""/>`.
+Solid represents Boolean Attribute using `boolean`.
+
+`true: boolean` adds an empty attribute:
+
+```jsx
+<input readonly={true} />
+<input readonly /> // in JSX a lack of value equals `true: boolean`
+<input readonly="" /> // for compatibility with HTML an empty string may be used
+```
+
+`false: boolean` removes the attribute:
+
+```jsx
+<input readonly={false} />
+```
+
+Note: It has to be `boolean`. `truthy` and `falsy` won't work. [`bool:`](https://docs.solidjs.com/reference/jsx-attributes/bool) namespace can be used in that case.
+
+## Enumerated Attributes
+
+An [Enumerated Attribute](https://developer.mozilla.org/en-US/docs/Glossary/Enumerated) is an attribute that allows a `string` value from a fixed set of possible `string` values.
+
+```jsx
+<input type="text"/>
+<input type="button"/>
+```
+
+A commonly confusing issue with enumerated attributes, is that some accept among its values the strings `"true"` and `"false"`.
+These are strings that happen to match the boolean identifiers but aren't boolean per se.
+
+For example, the correct use for [ARIA Attributes](https://developer.mozilla.org/en-US/docs/Glossary/Boolean/ARIA) is a `string` and not a `boolean`.
+
+```jsx
+<div aria-current="true"/> // ✅ correct use
+<div aria-current="false"/> // ✅ correct use
+<div aria-current={true}/> // ❌ incorrect use
+```
+
+## Removing Attributes
+
+Any attribute can be removed using `undefined` or `false: boolean`.
+
+## Event Handlers
+
+Lowercase event handlers were supported but not encouraged.
+This release drops support for `lowercase` event handlers in favor of the `camelCase` form.
+
+```jsx
+<div onClick={() => console.log('click')}/> // ✅ correct use
+<div onclick={() => console.log('click')}/> // ❌ no longer supported
+```
+
+Having multiple ways of doing the same thing made authoring components harder, as both ways had to be supported.
+This change makes it consistent.
+
+Note: For custom event handlers see [`on:`](https://docs.solidjs.com/reference/jsx-attributes/on).
