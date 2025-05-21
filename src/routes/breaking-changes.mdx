@@ -18,7 +18,7 @@ However, there were a few markup gotchas that this release addresses.
 
 Solid 2.0 aligns better with HTML, making it easier to understand and explain. The main idea is that [MDN](https://developer.mozilla.org/) should suffice, and no Solid-specific rules are introduced.
 
-## Attributes Case
+### Attributes Case
 
 `camelCase` attributes has been dropped in favor of `lowercase` attributes.
 
@@ -36,7 +36,7 @@ Solid 2.x
 
 Note: Attributes in `XML` space, such `SVG` are still case-sensitive per specification.
 
-## Properties
+### Properties
 
 Elements use attributes and not properties.
 However, the following few commonly used properties are still provided to ease development: `innerHTML`, `textContent` and `innerText`.
@@ -51,7 +51,7 @@ As usual, to set a property, or a custom property in an element see [`prop:`](ht
 <my-el prop:someProp={true}></my-el>
 ```
 
-## Boolean Attributes
+### Boolean Attributes
 
 A [Boolean Attribute](https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML) is an attribute that is present or not present.
 Commonly authored as `<input readonly/>` or `<input readonly=""/>`.
@@ -73,7 +73,7 @@ Solid represents Boolean Attribute using `boolean`.
 
 Note: It has to be `boolean`. `truthy` and `falsy` won't work. [`bool:`](https://docs.solidjs.com/reference/jsx-attributes/bool) namespace can be used in that case.
 
-## Enumerated Attributes
+### Enumerated Attributes
 
 An [Enumerated Attribute](https://developer.mozilla.org/en-US/docs/Glossary/Enumerated) is an attribute that allows a `string` value from a fixed set of possible `string` values.
 
@@ -93,11 +93,11 @@ For example, the correct use for [ARIA Attributes](https://developer.mozilla.org
 <div aria-current={true}/> // ❌ incorrect use
 ```
 
-## Removing Attributes
+### Removing Attributes
 
 Any attribute can be removed using `undefined` or `false: boolean`.
 
-## Event Handlers
+### Event Handlers
 
 Lowercase event handlers were supported but not encouraged.
 This release drops support for `lowercase` event handlers in favor of the `camelCase` form.
