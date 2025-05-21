@@ -108,6 +108,8 @@ This release drops support for `lowercase` event handlers in favor of the `camel
 ```
 
 Having multiple ways of doing the same thing made authoring components harder, as both ways had to be supported.
-This change makes it consistent.
+
+Components authors often provide callbacks that resemble event handlers, such `onSelectedChange` in [Kobalte](https://kobalte.dev/docs/core/overview/introduction/), `onInitialFocus` in [corvu](https://corvu.dev/), and `onOpenChange` in [Nitropage](https://nitropage.org/).
+Using `camelCase` makes it consistent with community use and expectations.
 
 Note: For custom event handlers see [`on:`](https://docs.solidjs.com/reference/jsx-attributes/on).
