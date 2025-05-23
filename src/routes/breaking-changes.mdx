@@ -16,7 +16,7 @@ const div = <div />; // HTMLDivElement
 
 However, there were a few markup gotchas that this release addresses.
 
-Solid 2.0 aligns better with web standards, making it easier to understand and explain. The main idea is that [MDN](https://developer.mozilla.org/) should suffice, and no Solid-specific rules are introduced.
+Solid 2.0 aligns better with web standards, making it easier to understand and explain. The main idea is that referencing [MDN](https://developer.mozilla.org/) should suffice, and no Solid-specific rules are introduced.
 
 ### Attributes Case
 
@@ -42,7 +42,7 @@ Elements use attributes and not properties.
 However, the following few commonly used properties are still provided to ease development: `innerHTML`, `textContent` and `innerText`.
 
 ```jsx
-<div textContent="<b>bold</b>" />
+<div textContent="<b>bold tag example</b>" />
 ```
 
 As usual, to set a property, or a custom property in an element see [`prop:`](https://docs.solidjs.com/reference/jsx-attributes/prop).
@@ -71,7 +71,9 @@ Solid represents Boolean Attribute using `boolean`.
 <input readonly={false} />
 ```
 
-Note: It has to be `boolean`. `truthy` and `falsy` won't work. [`bool:`](https://docs.solidjs.com/reference/jsx-attributes/bool) namespace can be used in that case.
+Note: It has to be `boolean`.
+`truthy` and `falsy` won't work.
+[`bool:`](https://docs.solidjs.com/reference/jsx-attributes/bool) namespace can be used in that case.
 
 ### Enumerated Attributes
 
@@ -82,20 +84,43 @@ An [Enumerated Attribute](https://developer.mozilla.org/en-US/docs/Glossary/Enum
 <input type="button"/>
 ```
 
-A commonly confusing issue with enumerated attributes, is that some accept among its values the strings `"true"` and `"false"`.
+A commonly confusing issue with Enumerated Attributes, is that some accept among its values the strings `"true"` and `"false"`.
 These are strings that happen to match the boolean identifiers but aren't boolean per se.
 
 For example, the correct use for [ARIA Attributes](https://developer.mozilla.org/en-US/docs/Glossary/Boolean/ARIA) is a `string` and not a `boolean`.
 
 ```jsx
-<div aria-current="true"/> // ✅ correct use
-<div aria-current="false"/> // ✅ correct use
-<div aria-current={true}/> // ❌ incorrect use
+<span aria-hidden="true"/> // ✅ correct use
+<span aria-hidden="false"/> // ✅ correct use
+<span aria-hidden={true}/> // ❌ incorrect use
 ```
 
 ### Removing Attributes
 
 Any attribute can be removed using `undefined` or `false: boolean`.
+
+### class and classList
+
+`classList` has been dropped and its behaviour merged into `class`.
+Making `class` behave similarly to [clsx](https://www.npmjs.com/package/clsx).
+
+Example:
+
+```jsx
+<div class={[...props.class, "myclass", { "other-class": signal() }]} />
+```
+
+```ts
+// type for illustrative purposes only - consult type definitions for reference
+
+type class = string | ClassList
+
+type ClassList =
+	| Record<string, boolean>
+	| Array<
+			string | number | boolean | null | undefined | Record<string, boolean>
+	  >;
+```
 
 ### Event Handlers
 
@@ -107,7 +132,7 @@ This release drops support for `lowercase` event handlers in favor of the `camel
 <div onclick={() => console.log('click')}/> // ❌ no longer supported
 ```
 
-Having multiple ways of doing the same thing made authoring components harder, as both ways had to be supported.
+Having multiple ways of doing the same thing made authoring components difficult, as both forms had to be supported.
 
 Components authors often provide callbacks that resemble event handlers, such `onSelectedChange` in [Kobalte](https://kobalte.dev/docs/core/overview/introduction/), `onInitialFocus` in [corvu](https://corvu.dev/), and `onOpenChange` in [Nitropage](https://nitropage.org/).
 Using `camelCase` makes it consistent with community use and expectations.
